@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Web Execution</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100&family=Prompt:wght@500;800&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.26.0/min/vs/editor/editor.main.css"/>
+      <style>
+         body {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         height: 100vh;
+         margin: 0;
+         background-color: rgb(18, 18, 18);
+         }
+         #editor-container {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         border-radius: 10px;
+         border-color: rgb(255, 255, 255)
+         }
+         #buttons-container {
+         flex-direction: row;
+         margin-top: 20px;
+         margin-right: 425px;
+         position: left;
+         }
+         @keyframes ripple {
+         to {
+         transform: scale(5);
+         opacity: 0;
+         }
+         }
+         #editor {
+         height: 500px;
+         width: 800px;
+         }
+      </style>
+   </head>
+   <body>
+      <script>
+         const Scripts = {
+         	R6: 11338415928
+         }
+      </script>
+      <script>
+	 const BackendURL = '';
+         const Username = prompt('Enter your roblox username before you continue:');
+         if (!Username || Username.length === 0) {
+         	window.location.href = window.location.href;
+         };
+	if (!BackendURL || BackendURL.length === 0) {
+		window.location.href = window.location.href;
+		alert('You must provide your backend url for the endpoints!');
+	};
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+      <p class="fw-bold fs-3 text-light">Zirt's Web Executor</p>
+      <div id="editor-container">
+         <div id="editor"class="border"></div>
+         <!-- Buttons container -->
+         <div id="buttons-container">
+            <button id="executeButton"type="button" class="btn btn-outline-primary">Execute</button>
+            <button id="clearButton"type="button" class="btn btn-outline-success">Clear</button>
+            <button id="clearQueueButton"type="button" class="btn btn-outline-info">Clear Queue</button>
+            <button id="R6Button"type="button" class="btn btn-outline-warning">R6</button>
+            <button id="ResetButton"type="button" class="btn btn-outline-danger">Reset</button>
+            <!-- 
+               toasts for notifications.
+               -->
+         </div>
+         <div id="execute-toast"class="toast">
+            <div class="toast-header">
+               <strong class="me-auto">Success</strong>
+               <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+               <i class="bi bi-check-circle"></i>
+               Successfully added the script in queue for execution!
+            </div>
+         </div>
+         <div id="queue-toast"class="toast">
+            <div class="toast-header">
+               <strong class="me-auto">Success</strong>
+               <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+               <i class="bi bi-check-circle"></i>
+               Successfully cleared the script queue!
+            </div>
+         </div>
+         <div id="r6-toast"class="toast">
+            <div class="toast-header">
+               <strong class="me-auto">Success</strong>
+               <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+               <i class="bi bi-check-circle"></i>
+               Successfully Converted character rig to R6!
+            </div>
+         </div>
+         <div id="reset-toast"class="toast">
+            <div class="toast-header">
+               <strong class="me-auto">Success</strong>
+               <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+               <i class="bi bi-check-circle"></i>
+               Successfully resetted character!
+            </div>
+         </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.26.0/min/vs/loader.js"></script>
+      <script>
+         require.config({ paths: { "vs": "https://cdn.jsdelivr.net/npm/monaco-editor@0.26.0/min/vs" }});
+         
+         require(["vs/editor/editor.main"], function() {
+         
+         monaco.languages.register({
+         id: 'lua',
+         extensions: ['.lua'],
+         })
+         
+             var editor = monaco.editor.create(document.getElementById("editor"), {
+                 value: "",
+                 language: "lua",
+                 theme: "vs-dark",
+                 automaticLayout: true,
+         suggest: {
+         	enabled: true,
+         },
+             });
+         
+         /* execute button */
+             document.getElementById("executeButton").addEventListener("click", function() {
+                 var code = editor.getValue();
+                 
+                 fetch(`${BackendURL}/addqueue`, {
+                     method: "POST",
+                     headers: {
+                         "Content-Type": "application/json"
+                     },
+                     body: JSON.stringify({ script: code })
+                 });
+         $('#execute-toast').toast({
+         	animation: true,
+         	autohide: true,
+         	delay: 1000,
+         })
+         $('#execute-toast').toast('show');
+             });
+         /* clear queue button */
+         document.getElementById("clearQueueButton").addEventListener("click", function() {
+                 fetch(`${BackendURL}/clearqueue`);
+         $('#queue-toast').toast({
+         	animation: true,
+         	autohide: true,
+         	delay: 1000,
+         })
+         $('#queue-toast').toast('show');
+             });
+         /* clear button */
+             document.getElementById("clearButton").addEventListener("click", function() {
+                 editor.setValue("");
+             });
+         /* r6 */
+         document.getElementById("R6Button").addEventListener("click", function() {
+         fetch(`${BackendURL}/addqueue`, {
+                     method: "POST",
+                     headers: {
+                         "Content-Type": "application/json"
+                     },
+                     body: JSON.stringify({ script: `require(${Scripts.R6}).load("${Username}")` })
+                 });
+         $('#r6-toast').toast({
+         	animation: true,
+         	autohide: true,
+         	delay: 1000,
+         })
+         $('#r6-toast').toast('show');
+         });
+         /* reset */
+         document.getElementById("ResetButton").addEventListener("click", function() {
+         fetch(`{BackendURL}/addqueue`, {
+                     method: "POST",
+                     headers: {
+                         "Content-Type": "application/json"
+                     },
+                     body: JSON.stringify({ script: `
+         local Players = game:GetService("Players");
+         local Player = Players["${Username}"];
+         if (Player) then 
+         Player:LoadCharacter();
+         end;
+         ` })
+                 });
+         $('#reset-toast').toast({
+         	animation: true,
+         	autohide: true,
+         	delay: 1000,
+         })
+         $('#reset-toast').toast('show');
+         });
+         });
+      </script>
+   </body>
+</html>
