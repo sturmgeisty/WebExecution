@@ -1,6 +1,6 @@
 # WebExecution
 
-#### Roblox Script execution, on your **Web Browser**!
+#### Roblox Script execution, on your **Web Browser**! (not intented for malicious use/several player use)
 
 # Files
 #### Lua files (base source code) can be accessed in the lua folder, while the rbxm folder provides the actual RBXM with everything set-up.
@@ -22,10 +22,10 @@ Start.Terminate();
 #### To set it up, you must host the back-end so the express server can successfully handle post/get requests, then you can also use the executor.html that is supplied in the backend files.
 #### Then, run these _**commands**_.
 ```bash
-    npm install express body-parser
+npm install express body-parser
 ```
 ```js
-    node index.js
+node index.js
 ```
 # Description
 #### Short-story, just an web based executor which uses the long-polling method in roblox to achieve "server giving client data" since it isn't yet possible in roblox to use websockets or anything websocket related. This web executor was made in 3 hours in a rush, and it's meant to be used for 1 player only. You can adapt it to several users using it, and it even has it's custom settings.
