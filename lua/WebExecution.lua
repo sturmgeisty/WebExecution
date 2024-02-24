@@ -14,13 +14,13 @@
 --------------------------
 
 
-script:WaitForChild('ConnectionGui'); -- Connection GUI (w.i.p) --
+script:WaitForChild('ConnectionGui', 1); -- Connection GUI (w.i.p) --
 
-script:WaitForChild('CleanEnv'); -- Module that returns an so-called empty environment. (security purposes) --
-script:WaitForChild('Init'); -- Init Module. (For custom functions) --
-script:WaitForChild('Modules'); -- Yield forever if missing (learn your lesson)
-script:WaitForChild('Modules'):WaitForChild('Compilers'); -- Yield forever if missing (learn your lesson)
-script:WaitForChild('Modules'):WaitForChild('Interpreters'); -- Yield forever if missing (learn your lesson)
+script:WaitForChild('CleanEnv', 1); -- Module that returns an so-called empty environment. (security purposes) --
+script:WaitForChild('Init', 1); -- Init Module. (For custom functions) --
+script:WaitForChild('Modules', 1); -- Yield forever if missing (learn your lesson)
+script:FindFirstChild('Modules'):WaitForChild('Compilers', 1); -- Yield forever if missing (learn your lesson)
+script:FindFirstChild('Modules'):WaitForChild('Interpreters', 1); -- Yield forever if missing (learn your lesson)
 
 local Modules : Folder = script:FindFirstChild('Modules');
 --------------------------
